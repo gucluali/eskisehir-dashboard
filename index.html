@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eskişehir Live Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <h1>ESKİŞEHİR <span class="highlight">DASHBOARD</span></h1>
+        <div id="clock" class="digital-clock">00:00:00</div>
+    </header>
+
+    <div class="container">
+        <div class="card weather-card">
+            <h3><i class="fas fa-cloud-sun"></i> Hava Durumu</h3>
+            <div id="weather-data">
+                <p>Yükleniyor...</p>
+            </div>
+        </div>
+
+        <div class="card aqi-card">
+            <h3><i class="fas fa-wind"></i> Hava Kalitesi</h3>
+            <div id="aqi-data">
+                <span class="value">--</span>
+                <span class="status">Veri Bekleniyor</span>
+            </div>
+        </div>
+
+        <div class="card finance-card">
+            <h3><i class="fas fa-chart-line"></i> Piyasalar</h3>
+            <ul id="finance-list">
+                <li>USD/TRY: <span id="usd">--</span></li>
+                <li>EUR/TRY: <span id="eur">--</span></li>
+            </ul>
+        </div>
+
+        <div class="card map-card">
+            <h3><i class="fas fa-map-marked-alt"></i> Trafik Yoğunluğu</h3>
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d49068.55297368296!2d30.525631099999998!3d39.76670605!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1str!2str!4v1700000000000!5m2!1str!2str" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
