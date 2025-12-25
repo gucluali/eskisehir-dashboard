@@ -5,10 +5,9 @@ function updateClock() {
 }
 setInterval(updateClock, 1000);
 
-// API AYARLARI
+// API AYARLARI (Hava Durumu)
 const apiKey = '389a06bcdba5a85c71b6a2f1a9b73f2b'; 
 const city = 'Eskisehir';
-// Eskişehir Koordinatları (Hava Kalitesi için gerekli)
 const lat = 39.7767;
 const lon = 30.5206;
 
@@ -31,11 +30,10 @@ async function getWeather() {
         `;
     } catch (error) {
         console.log("Hava durumu bekleniyor...");
-        // Hata mesajını kullanıcıya göstermiyoruz, eski veri kalsın veya "Yükleniyor" dönsün
     }
 }
 
-// 2. HAVA KALİTESİ GETİR (YENİ ÖZELLİK)
+// 2. HAVA KALİTESİ GETİR
 async function getAirQuality() {
     const aqiElement = document.getElementById('aqi-data');
     try {
@@ -44,40 +42,64 @@ async function getAirQuality() {
         if (!response.ok) throw new Error(response.status);
         const data = await response.json();
         
-        // AQI İndeksi: 1=İyi, 2=Makul, 3=Orta, 4=Kötü, 5=Çok Kötü
         const aqi = data.list[0].main.aqi;
         let status = "Bilinmiyor";
         let color = "gray";
 
-        if(aqi == 1) { status = "Mükemmel"; color = "#4ade80"; } // Yeşil
+        // Renklendirme Mantığı
+        if(aqi == 1) { status = "Mükemmel"; color = "#4ade80"; } 
         else if(aqi == 2) { status = "İyi"; color = "#a3e635"; }
-        else if(aqi == 3) { status = "Orta"; color = "#facc15"; } // Sarı
-        else if(aqi == 4) { status = "Kötü"; color = "#fb923c"; } // Turuncu
-        else if(aqi == 5) { status = "Tehlikeli"; color = "#f87171"; } // Kırmızı
+        else if(aqi == 3) { status = "Orta"; color = "#facc15"; }
+        else if(aqi == 4) { status = "Kötü"; color = "#fb923c"; }
+        else if(aqi == 5) { status = "Tehlikeli"; color = "#f87171"; }
 
         aqiElement.innerHTML = `
             <div style="font-size: 2.5rem; font-weight:bold; color:${color};">${status}</div>
-            <div style="font-size: 0.9rem; color: #94a3b8;">Hava Kalite İndeksi: ${aqi}/5</div>
+            <div style="font-size: 0.9rem; color: #94a3b8;">Endeks: ${aqi}/5</div>
         `;
     } catch (error) {
         console.log("Hava kalitesi bekleniyor...");
     }
 }
 
-// DÖVİZ SİMÜLASYONU
-function getFinance() {
-    document.getElementById('usd').innerText = "35.42 ₺"; 
-    document.getElementById('eur').innerText = "38.10 ₺"; 
+// 3. CANLI DÖVİZ GETİR (YENİLENMİŞ KISIM)
+async function getFinance() {
+    const usdElement = document.getElementById('usd');
+    const eurElement = document.getElementById('eur');
+
+    try {
+        // Frankfurt Borsası API'si (Ücretsizdir)
+        const response = await fetch('https://api.frankfurter.app/latest?from=USD&to=TRY,EUR');
+        const data = await response.json();
+
+        // USD -> TRY
+        const usdRate = data.rates.TRY;
+        
+        // Çapraz kurdan EUR hesaplama veya ayrı çekme
+        // Daha kesin olması için EUR'yu ayrı çekelim:
+        const responseEur = await fetch('https://api.frankfurter.app/latest?from=EUR&to=TRY');
+        const dataEur = await responseEur.json();
+        const eurRate = dataEur.rates.TRY;
+
+        usdElement.innerText = `${usdRate} ₺`;
+        eurElement.innerText = `${eurRate} ₺`;
+        
+    } catch (error) {
+        console.error("Finans verisi hatası:", error);
+        usdElement.innerText = "Yükleniyor..";
+        eurElement.innerText = "Yükleniyor..";
+    }
 }
 
 // BAŞLAT
 window.onload = function() {
     updateClock();
     getWeather();
-    getAirQuality(); // Yeni fonksiyonu çağır
-    getFinance();
+    getAirQuality();
+    getFinance(); // Canlı finansı çağır
     
-    // Her 10 dakikada bir güncelle
+    // Verileri düzenli güncelle (Hava 10dk, Finans 1 saatte bir)
     setInterval(getWeather, 600000);
     setInterval(getAirQuality, 600000);
+    setInterval(getFinance, 3600000);
 };
